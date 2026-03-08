@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jackson Level Up</title>
+
+<style>
+body{
+font-family:Arial;
+background:#0f172a;
+color:white;
+padding:20px;
+}
+
+.card{
+background:#111827;
+padding:20px;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+button{
+background:#f59e0b;
+border:none;
+padding:10px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.progress{
+height:20px;
+background:#1f2937;
+border-radius:10px;
+overflow:hidden;
+}
+
+.bar{
+height:100%;
+background:#22c55e;
+width:0%;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+<h2>LEVEL UP Jackson</h2>
+Weekly Goal: <b>500</b><br>
+Points Earned: <b id="earned">0</b><br>
+Remaining: <b id="remaining">500</b>
+
+<div class="progress">
+<div class="bar" id="bar"></div>
+</div>
+</div>
+
+<div class="card">
+
+Category<br>
+<select id="category"></select>
+
+<br><br>
+
+Activity<br>
+<select id="activity"></select>
+
+<br><br>
+
+Points<br>
+<input id="points" readonly>
+
+<br><br>
+
+Date<br>
+<input type="date" id="date">
+
+<br><br>
+
+<button onclick="addActivity()">Add Activity</button>
+
+</div>
+
+<div class="card">
+<h3>This Week</h3>
+
+<table width="100%">
+<thead>
+<tr>
+<th>Date</th>
+<th>Category</th>
+<th>Activity</th>
+<th>Points</th>
+</tr>
+</thead>
+
+<tbody id="log"></tbody>
+
+</table>
+</div>
+
+<script>
+const goal=500
+const storage="levelup_jackson"
+
+const data={
+Strength:[["Push Ups",20],["Squats",15],["Lunges",15],["Planks",15],["Jump Squats",20]],
+Conditioning:[["Sprint Workout",25],["Shuttle Runs",20],["Agility Ladder",20],["20yd Sprints",20]],
+"Stick Skills":[["Wall Ball Right",10],["Wall Ball Left",10],["Quick Sticks",10],["Full Wall Ball",25]],
+Dodges:[["Split Dodge",20],["Roll Dodge",20],["Face Dodge",20],["Question Mark",20]]
+}
+
+const cat=document.getElementById("category")
+const act=document.getElementById("activity")
+const pts=document.getElementById("points")
+
+function populateCategories(){
+cat.innerHTML=""
+Object.keys(data).forEach(c=>{
+let o=document.createElement("option")
+o.value=c
+o.textContent=c
+cat.appendChild(o)
+})
+populateActivities()
+}
+
+function populateActivities(){
+act.innerHTML=""
+data[cat.value].forEach(a=>{
+let o=document.createElement("option")
+o.value=a[0]
+o.textContent=a[0]
+o.dataset.points=a[1]
+act.appendChild(o)
+})
+updatePoints()
+}
+
+function updatePoints(){
+pts.value=act.options[act.selectedIndex].dataset.points
+}
+
+cat.onchange=populateActivities
+act.onchange=updatePoints
+
+function weekStart(d){
+let date=new Date(d)
+let day=date.getDay()
+let diff=date.getDate()-day+(day==0?-6:1)
+return new Date(date.setDate(diff))
+}
+
+function getData(){
+return JSON.parse(localStorage.getItem(storage)||"[]")
+}
+
+function saveData(d){
+localStorage.setItem(storage,JSON.stringify(d))
+}
+
+function addActivity(){
+let entries=getData()
+
+entries.push({
+date:document.getElementById("date").value,
+category:cat.value,
+activity:act.value,
+points:Number(pts.value)
+})
+
+saveData(entries)
+render()
+}
+
+function render(){
+let entries=getData()
+let start=weekStart(new Date())
+let weekEntries=entries.filter(e=>new Date(e.date)>=start)
+let total=weekEntries.reduce((a,b)=>a+b.points,0)
+
+document.getElementById("earned").textContent=total
+document.getElementById("remaining").textContent=Math.max(goal-total,0)
+
+document.getElementById("bar").style.width=(total/goal*100)+"%"
+
+let log=document.getElementById("log")
+log.innerHTML=""
+
+weekEntries.forEach(e=>{
+let r=document.createElement("tr")
+r.innerHTML=`<td>${e.date}</td><td>${e.category}</td><td>${e.activity}</td><td>${e.points}</td>`
+log.appendChild(r)
+})
+}
+
+document.getElementById("date").value=new Date().toISOString().split("T")[0]
+
+populateCategories()
+render()
+</script>
+
+</body>
+</html>
