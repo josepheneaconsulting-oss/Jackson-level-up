@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Jackson Level Up" />
+  <title>Jackson Level Up V2</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <style>
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#172033;
+      --text:#f8fafc;
+      --muted:#cbd5e1;
+      --line:#334155;
+      --accent:#f59e0b;
+      --good:#22c55e;
+      --danger:#ef4444;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:linear-gradient(180deg,#0b1220,#111827 35%,#0f172a);
+      color:var(--text);
+    }
+    .app{
+      max-width:680px;
+      margin:0 auto;
+      min-height:100vh;
+      padding:16px 16px 40px;
+    }
+    .card{
+      background:rgba(17,24,39,.97);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:16px;
+      margin-bottom:14px;
+      box-shadow:0 12px 28px rgba(0,0,0,.2);
+    }
+    h1,h2,h3{margin:0 0 8px 0}
+    .brand{color:var(--accent);font-weight:800}
+    .sub,.muted{color:var(--muted);line-height:1.4}
+    .hero{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+    .pill{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#0b1220;
+      color:var(--muted);
+      font-size:.92rem;
+      margin-top:10px;
+    }
+    .summary-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:14px;
+    }
+    .mini{
+      background:var(--panel2);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+    }
+    .label{font-size:.82rem;color:var(--muted);margin-bottom:6px}
+    .value{font-size:1.4rem;font-weight:800}
+    .progress{
+      height:14px;
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:#0b1220;
+      margin-top:8px;
+    }
+    .bar{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,var(--accent),var(--good));
+      transition:width .25s ease;
+    }
+    .rings{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:14px;
+    }
+    .ring-card{
+      background:var(--panel2);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:12px;
+      text-align:center;
+    }
+    .ring{
+      width:88px;
+      height:88px;
+      margin:4px auto 8px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      font-weight:800;
+      font-size:1rem;
+      color:var(--text);
+      background:conic-gradient(var(--accent) 0deg, #0b1220 0deg);
+      position:relative;
+    }
+    .ring::after{
+      content:"";
+      position:absolute;
+      inset:10px;
+      background:var(--panel2);
+      border-radius:50%;
+      border:1px solid var(--line);
+    }
+    .ring span{
+      position:relative;
+      z-index:1;
+    }
+    .tabs{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:8px;
+      margin-top:12px;
+    }
+    .tab{
+      background:#0b1220;
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 8px;
+      text-align:center;
+      font-weight:700;
+      cursor:pointer;
+      font-size:.92rem;
+    }
+    .tab.active{
+      background:var(--accent);
+      color:#111827;
+      border-color:transparent;
+    }
+    .activity-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    .activity-btn{
+      background:#172033;
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 12px;
+      text-align:left;
+      cursor:pointer;
+      min-height:86px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      font-weight:700;
+    }
+    .activity-btn small{
+      color:var(--muted);
+      font-weight:600;
+      margin-top:8px;
+      display:block;
+    }
+    .activity-btn.selected{
+      outline:2px solid var(--accent);
+      background:#1d2a42;
+    }
+    .stack{display:grid;gap:10px}
+    input, textarea, button, select{
+      width:100%;
+      padding:13px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#0b1220;
+      color:var(--text);
+      font-size:1rem;
+    }
+    textarea{min-height:84px;resize:vertical}
+    button{
+      border:none;
+      background:var(--accent);
+      color:#111827;
+      font-weight:800;
+      cursor:pointer;
+    }
+    button.secondary{
+      background:#1e293b;
+      color:var(--text);
+      border:1px solid var(--line);
+    }
+    button.danger{
+      background:var(--danger);
+      color:#fff;
+    }
+    .row2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .row3{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+    }
+    .selection{
+      background:#0b1220;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      color:var(--muted);
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:10px;
+    }
+    th,td{
+      text-align:left;
+      padding:10px 8px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+      font-size:.93rem;
+    }
+    th{color:var(--muted);font-size:.84rem}
+    .tag{
+      display:inline-block;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#172033;
+      font-size:.78rem;
+    }
+    .empty{
+      margin-top:10px;
+      padding:14px;
+      border:1px dashed var(--line);
+      border-radius:16px;
+      background:#0b1220;
+      color:var(--muted);
+      text-align:center;
+    }
+    .install{
+      max-width:180px;
+    }
+    @media (max-width:640px){
+      .activity-grid,.row2,.row3,.rings,.summary-grid{grid-template-columns:1fr}
+      .tabs{grid-template-columns:1fr 1fr}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="card">
+    <div class="hero">
+      <div>
+        <h1><span class="brand">LEVEL UP</span> Jackson V2</h1>
+        <div class="sub">Cleaner mobile version with category tabs, big tap targets, progress rings, and quick logging.</div>
+        <div class="pill" id="weekLabel">Week of ...</div>
+      </div>
+      <button id="installBtn" class="secondary install" style="display:none;">Install App</button>
+    </div>
+
+    <div class="summary-grid">
+      <div class="mini">
+        <div class="label">Weekly Goal</div>
+        <div class="value" id="goalValue">500</div>
+      </div>
+      <div class="mini">
+        <div class="label">Points Earned</div>
+        <div class="value" id="earnedValue">0</div>
+      </div>
+      <div class="mini">
+        <div class="label">Remaining</div>
+        <div class="value" id="remainingValue">500</div>
+      </div>
+      <div class="mini">
+        <div class="label">Activities Logged</div>
+        <div class="value" id="countValue">0</div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;">
+      <div class="label">Weekly Progress</div>
+      <div class="value" id="percentValue">0%</div>
+      <div class="progress"><div class="bar" id="progressBar"></div></div>
+    </div>
+
+    <div class="rings">
+      <div class="ring-card">
+        <div class="ring" id="ringStrength"><span>0%</span></div>
+        <div><strong>Strength</strong></div>
+        <div class="muted">Target 125</div>
+      </div>
+      <div class="ring-card">
+        <div class="ring" id="ringConditioning"><span>0%</span></div>
+        <div><strong>Conditioning</strong></div>
+        <div class="muted">Target 125</div>
+      </div>
+      <div class="ring-card">
+        <div class="ring" id="ringStickSkills"><span>0%</span></div>
+        <div><strong>Stick Skills</strong></div>
+        <div class="muted">Target 125</div>
+      </div>
+      <div class="ring-card">
+        <div class="ring" id="ringDodges"><span>0%</span></div>
+        <div><strong>Dodges</strong></div>
+        <div class="muted">Target 125</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Choose Category</h2>
+    <div class="tabs" id="tabs"></div>
+    <div class="selection" id="selectionBox" style="margin-top:12px;">Selected: Strength</div>
+  </div>
+
+  <div class="card">
+    <h2>Pick Activity</h2>
+    <div class="activity-grid" id="activityGrid"></div>
+  </div>
+
+  <div class="card">
+    <h2>Log Activity</h2>
+    <div class="row2">
+      <div>
+        <div class="label">Date</div>
+        <input id="date" type="date" />
+      </div>
+      <div>
+        <div class="label">Points</div>
+        <input id="points" type="number" readonly />
+      </div>
+    </div>
+    <div style="margin-top:10px;">
+      <div class="label">Notes</div>
+      <textarea id="notes" placeholder="Optional notes"></textarea>
+    </div>
+    <div class="selection" id="currentSelection" style="margin-top:10px;">Activity: Push-Ups (3x15) • 15 pts</div>
+    <div class="row2" style="margin-top:10px;">
+      <button id="addBtn">Add Activity</button>
+      <button id="clearBtn" class="secondary">Clear</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Quick Actions</h2>
+    <div class="row3">
+      <button id="loadGoalBtn" class="secondary">Load 500 Goal</button>
+      <button id="autoFillBtn" class="secondary">Auto-Fill Plan</button>
+      <button id="exportBtn" class="secondary">Export CSV</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;">
+      <h2>This Week</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button id="clearWeekBtn" class="danger" style="width:auto;padding:10px 12px;">Clear Week</button>
+        <button id="resetBtn" class="danger" style="width:auto;padding:10px 12px;">Reset All</button>
+      </div>
+    </div>
+    <div id="emptyState" class="empty">No activities logged this week yet.</div>
+    <div style="overflow:auto;">
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Category</th><th>Activity</th><th>Pts</th><th>Action</th></tr>
+        </thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = "jackson_level_up_v2";
+const GOAL = 500;
+const CATEGORY_TARGET = 125;
+
+const categories = ["Strength","Conditioning","Stick Skills","Dodges"];
+
+const categoryActivities = {
+  "Strength": [
+    {activity:"Push-Ups (3x15)", points:15},
+    {activity:"Squats (3x20)", points:15},
+    {activity:"Lunges (3x10 each leg)", points:15},
+    {activity:"Planks (3x45 sec)", points:15},
+    {activity:"Jump Squats (3x10)", points:20},
+    {activity:"Mountain Climbers (3x30 sec)", points:10}
+  ],
+  "Conditioning": [
+    {activity:"Sprint Workout (5x10 yd, 5x20 yd, 4x30 yd)", points:25},
+    {activity:"Shuttle Runs (5, 10, 15 yd x 4 each)", points:20},
+    {activity:"Agility Ladder / Footwork (10 min)", points:20},
+    {activity:"10 x 20-Yard Sprints", points:20},
+    {activity:"Change of Direction Session (8 reps each side)", points:20},
+    {activity:"Game-Speed Conditioning (6 rounds)", points:25}
+  ],
+  "Stick Skills": [
+    {activity:"Wall Ball Right Hand (50)", points:10},
+    {activity:"Wall Ball Left Hand (50)", points:10},
+    {activity:"Quick Sticks (25)", points:10},
+    {activity:"Catch, Switch, Throw (25)", points:10},
+    {activity:"One-Hand Cradle Each Hand (30 sec each)", points:10},
+    {activity:"Full Wall Ball Session (150 total reps)", points:25}
+  ],
+  "Dodges": [
+    {activity:"Split Dodge to Shot (10 each side)", points:20},
+    {activity:"Roll Dodge to Shot (10 each side)", points:20},
+    {activity:"Face Dodge to Shot (10 each side)", points:20},
+    {activity:"Question Mark Dodge (8 each side)", points:20},
+    {activity:"Inside Roll / Re-Dodge (8 each side)", points:20}
+  ]
+};
+
+const autoFillPlan = [
+  ["Strength","Push-Ups (3x15)",15],["Strength","Squats (3x20)",15],["Strength","Lunges (3x10 each leg)",15],
+  ["Strength","Planks (3x45 sec)",15],["Strength","Jump Squats (3x10)",20],["Strength","Mountain Climbers (3x30 sec)",10],
+  ["Conditioning","Sprint Workout (5x10 yd, 5x20 yd, 4x30 yd)",25],["Conditioning","Shuttle Runs (5, 10, 15 yd x 4 each)",20],
+  ["Conditioning","Agility Ladder / Footwork (10 min)",20],["Conditioning","10 x 20-Yard Sprints",20],
+  ["Conditioning","Change of Direction Session (8 reps each side)",20],["Conditioning","Game-Speed Conditioning (6 rounds)",25],
+  ["Stick Skills","Wall Ball Right Hand (50)",10],["Stick Skills","Wall Ball Left Hand (50)",10],
+  ["Stick Skills","Quick Sticks (25)",10],["Stick Skills","Catch, Switch, Throw (25)",10],
+  ["Stick Skills","One-Hand Cradle Each Hand (30 sec each)",10],["Stick Skills","Full Wall Ball Session (150 total reps)",25],
+  ["Dodges","Split Dodge to Shot (10 each side)",20],["Dodges","Roll Dodge to Shot (10 each side)",20],
+  ["Dodges","Face Dodge to Shot (10 each side)",20],["Dodges","Question Mark Dodge (8 each side)",20],
+  ["Dodges","Inside Roll / Re-Dodge (8 each side)",20]
+];
+
+let selectedCategory = "Strength";
+let selectedActivity = categoryActivities["Strength"][0].activity;
+
+const els = {
+  tabs: document.getElementById("tabs"),
+  activityGrid: document.getElementById("activityGrid"),
+  selectionBox: document.getElementById("selectionBox"),
+  currentSelection: document.getElementById("currentSelection"),
+  date: document.getElementById("date"),
+  points: document.getElementById("points"),
+  notes: document.getElementById("notes"),
+  addBtn: document.getElementById("addBtn"),
+  clearBtn: document.getElementById("clearBtn"),
+  loadGoalBtn: document.getElementById("loadGoalBtn"),
+  autoFillBtn: document.getElementById("autoFillBtn"),
+  exportBtn: document.getElementById("exportBtn"),
+  clearWeekBtn: document.getElementById("clearWeekBtn"),
+  resetBtn: document.getElementById("resetBtn"),
+  goalValue: document.getElementById("goalValue"),
+  earnedValue: document.getElementById("earnedValue"),
+  remainingValue: document.getElementById("remainingValue"),
+  countValue: document.getElementById("countValue"),
+  percentValue: document.getElementById("percentValue"),
+  progressBar: document.getElementById("progressBar"),
+  weekLabel: document.getElementById("weekLabel"),
+  logBody: document.getElementById("logBody"),
+  emptyState: document.getElementById("emptyState"),
+  ringStrength: document.getElementById("ringStrength"),
+  ringConditioning: document.getElementById("ringConditioning"),
+  ringStickSkills: document.getElementById("ringStickSkills"),
+  ringDodges: document.getElementById("ringDodges"),
+  installBtn: document.getElementById("installBtn")
+};
+
+function loadData(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {goal:GOAL, activities:[]}; }
+  catch(e){ return {goal:GOAL, activities:[]}; }
+}
+function saveData(data){ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+function formatDate(date){
+  const d = new Date(date), y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,"0"), day = String(d.getDate()).padStart(2,"0");
+  return y + "-" + m + "-" + day;
+}
+function prettyDate(dateStr){
+  const d = new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString(undefined, {month:"short", day:"numeric"});
+}
+function getStartOfWeek(date){
+  const d = new Date(date || new Date());
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+function currentWeekRange(){
+  const start = getStartOfWeek(new Date());
+  const end = new Date(start);
+  end.setDate(end.getDate() + 6);
+  return {start,end};
+}
+function inCurrentWeek(dateStr){
+  const d = new Date(dateStr + "T00:00:00");
+  const r = currentWeekRange();
+  return d >= r.start && d <= r.end;
+}
+function getPoints(category, activity){
+  const found = (categoryActivities[category] || []).find(a => a.activity === activity);
+  return found ? found.points : 0;
+}
+function updateSelectionUI(){
+  const pts = getPoints(selectedCategory, selectedActivity);
+  els.selectionBox.textContent = "Selected: " + selectedCategory;
+  els.currentSelection.textContent = "Activity: " + selectedActivity + " • " + pts + " pts";
+  els.points.value = pts;
+}
+function renderTabs(){
+  els.tabs.innerHTML = "";
+  categories.forEach(category => {
+    const btn = document.createElement("button");
+    btn.className = "tab" + (category === selectedCategory ? " active" : "");
+    btn.textContent = category;
+    btn.addEventListener("click", () => {
+      selectedCategory = category;
+      selectedActivity = categoryActivities[category][0].activity;
+      renderTabs();
+      renderActivities();
+      updateSelectionUI();
+    });
+    els.tabs.appendChild(btn);
+  });
+}
+function renderActivities(){
+  els.activityGrid.innerHTML = "";
+  (categoryActivities[selectedCategory] || []).forEach(item => {
+    const btn = document.createElement("button");
+    btn.className = "activity-btn" + (item.activity === selectedActivity ? " selected" : "");
+    btn.innerHTML = "<div>" + item.activity + "</div><small>" + item.points + " pts</small>";
+    btn.addEventListener("click", () => {
+      selectedActivity = item.activity;
+      renderActivities();
+      updateSelectionUI();
+    });
+    els.activityGrid.appendChild(btn);
+  });
+}
+function renderRings(currentActivities){
+  const totals = {
+    "Strength":0,
+    "Conditioning":0,
+    "Stick Skills":0,
+    "Dodges":0
+  };
+  currentActivities.forEach(a => { totals[a.category] = (totals[a.category] || 0) + Number(a.points || 0); });
+
+  const ringMap = {
+    "Strength": els.ringStrength,
+    "Conditioning": els.ringConditioning,
+    "Stick Skills": els.ringStickSkills,
+    "Dodges": els.ringDodges
+  };
+
+  Object.keys(ringMap).forEach(cat => {
+    const pct = Math.min(100, Math.round((totals[cat] / CATEGORY_TARGET) * 100));
+    const deg = Math.round((pct / 100) * 360);
+    ringMap[cat].style.background = "conic-gradient(var(--accent) " + deg + "deg, #0b1220 " + deg + "deg)";
+    ringMap[cat].querySelector("span").textContent = pct + "%";
+  });
+}
+function render(){
+  const data = loadData();
+  const current = data.activities.filter(a => inCurrentWeek(a.date)).sort((a,b) => new Date(b.date) - new Date(a.date));
+  const earned = current.reduce((sum, a) => sum + Number(a.points || 0), 0);
+  const remaining = Math.max(0, Number(data.goal) - earned);
+  const pct = Math.min(100, Math.round((earned / Number(data.goal || 1)) * 100));
+
+  els.goalValue.textContent = data.goal;
+  els.earnedValue.textContent = earned;
+  els.remainingValue.textContent = remaining;
+  els.countValue.textContent = current.length;
+  els.percentValue.textContent = pct + "%";
+  els.progressBar.style.width = pct + "%";
+
+  const r = currentWeekRange();
+  els.weekLabel.textContent = "Week of " + r.start.toLocaleDateString(undefined,{month:"short",day:"numeric"}) + " – " + r.end.toLocaleDateString(undefined,{month:"short",day:"numeric"});
+
+  renderRings(current);
+
+  els.logBody.innerHTML = "";
+  els.emptyState.style.display = current.length ? "none" : "block";
+
+  current.forEach(item => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + prettyDate(item.date) + "</td><td><span class='tag'>" + item.category + "</span></td><td>" + item.activity + "</td><td>" + item.points + "</td><td><button data-id='" + item.id + "' class='danger' style='width:auto;padding:8px 10px;'>Delete</button></td>";
+    els.logBody.appendChild(tr);
+  });
+
+  document.querySelectorAll("[data-id]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const data = loadData();
+      data.activities = data.activities.filter(a => a.id !== btn.dataset.id);
+      saveData(data);
+      render();
+    });
+  });
+}
+function addActivity(){
+  const pts = getPoints(selectedCategory, selectedActivity);
+  const data = loadData();
+  data.activities.push({
+    id: String(Date.now()) + Math.random().toString(16).slice(2),
+    date: els.date.value,
+    category: selectedCategory,
+    activity: selectedActivity,
+    points: pts,
+    notes: els.notes.value.trim()
+  });
+  saveData(data);
+  els.notes.value = "";
+  render();
+}
+function exportCSV(){
+  const data = loadData();
+  const rows = [["Date","Category","Activity","Points","Notes"]];
+  data.activities.forEach(a => rows.push([a.date,a.category,a.activity,a.points,a.notes || ""]));
+  const csv = rows.map(row => row.map(v => '"' + String(v).replace(/"/g,'""') + '"').join(",")).join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "jackson_level_up_v2.csv"; a.click();
+  URL.revokeObjectURL(url);
+}
+function clearWeek(){
+  if (!confirm("Clear all activities for this week?")) return;
+  const data = loadData();
+  data.activities = data.activities.filter(a => !inCurrentWeek(a.date));
+  saveData(data);
+  render();
+}
+function resetAll(){
+  if (!confirm("Reset all saved data?")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  render();
+}
+function loadGoalOnly(){
+  const data = loadData();
+  data.goal = GOAL;
+  saveData(data);
+  render();
+}
+function autoFill(){
+  const data = loadData();
+  data.goal = GOAL;
+  const today = formatDate(new Date());
+  autoFillPlan.forEach(item => {
+    data.activities.push({
+      id: String(Date.now()) + Math.random().toString(16).slice(2),
+      date: today,
+      category: item[0],
+      activity: item[1],
+      points: item[2],
+      notes: ""
+    });
+  });
+  saveData(data);
+  render();
+}
+
+els.addBtn.addEventListener("click", addActivity);
+els.clearBtn.addEventListener("click", () => {
+  selectedActivity = categoryActivities[selectedCategory][0].activity;
+  els.notes.value = "";
+  renderActivities();
+  updateSelectionUI();
+});
+els.loadGoalBtn.addEventListener("click", loadGoalOnly);
+els.autoFillBtn.addEventListener("click", autoFill);
+els.exportBtn.addEventListener("click", exportCSV);
+els.clearWeekBtn.addEventListener("click", clearWeek);
+els.resetBtn.addEventListener("click", resetAll);
+
+let deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  els.installBtn.style.display = "block";
+});
+els.installBtn.addEventListener("click", async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  els.installBtn.style.display = "none";
+});
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./service-worker.js"));
+}
+
+function init(){
+  els.date.value = formatDate(new Date());
+  renderTabs();
+  renderActivities();
+  updateSelectionUI();
+  render();
+}
+init();
+</script>
+</body>
+</html>
